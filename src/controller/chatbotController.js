@@ -61,14 +61,14 @@ const postWebhook = (req, res) => {
   }
 }
 
-function handleMessage(sender_psid, received_message) {
+async function handleMessage(sender_psid, received_message) {
   let response;
 
   // Check if the message contains text
   if (received_message.text) {
 
     // Create the payload for a basic text message
-    const text = HandleOpenAI(received_message.text)
+    const text = await HandleOpenAI(received_message.text)
     console.log(`
       ----------------------------------
       OpenAI: ${text}
