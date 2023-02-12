@@ -61,7 +61,7 @@ const postWebhook = (req, res) => {
   }
 }
 
-async function handleMessage(sender_psid, received_message) {
+function handleMessage(sender_psid, received_message) {
   let response;
 
   // Check if the message contains text
@@ -70,13 +70,15 @@ async function handleMessage(sender_psid, received_message) {
       response = {
         "text": 'Tôi tên là Alan đẹp trai khoai to'
       }
+      callSendAPI(sender_psid, response);
     } else {
-      let text
-      await HandleOpenAI(received_message.text).then(data => text = data)
-      response = {
-        "text": text
-      }
+      HandleOpenAI(received_message.text).then(data => {
+        callSendAPI(sender_psid, {
+          "text": data
+        });
+      })
     }
+    return
   } else if (received_message.attachments) {
     response = {
       "text": `Mày gửi cái gì dị`
