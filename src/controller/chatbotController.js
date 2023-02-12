@@ -71,6 +71,7 @@ async function handleMessage(sender_psid, received_message) {
         "text": 'Tôi tên là Alan đẹp trai khoai to'
       }
     } else {
+      let text
       await HandleOpenAI(received_message.text).then(data => text = data)
       response = {
         "text": text
