@@ -1,5 +1,6 @@
 require('dotenv').config()
 import request from 'request'
+import HandleOpenAI from './HandleOpenAI'
 
 const MY_VERIFY_TOKEN = process.env.MY_VERIFY_TOKEN
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN
@@ -67,8 +68,9 @@ function handleMessage(sender_psid, received_message) {
   if (received_message.text) {
 
     // Create the payload for a basic text message
+    const text = HandleOpenAI(received_message.text)
     response = {
-      "text": `You sent the message: "${received_message.text}". Now send me an image!`
+      "text": text
     }
   } else if (received_message.attachments) {
     response = {
