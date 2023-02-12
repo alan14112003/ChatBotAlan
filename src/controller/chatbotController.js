@@ -1,4 +1,5 @@
 require('dotenv').config()
+import request from 'request'
 
 const MY_VERIFY_TOKEN = process.env.MY_VERIFY_TOKEN
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN
@@ -32,13 +33,23 @@ const postWebhook = (req, res) => {
   if (body.object === 'page') {
 
     body.entry.forEach(entry => {
-      
-      let webhook_event = entry.messaging[0];
-      console.log(webhook_event);
-    
+
+      // Gets the body of the webhook event
+      let webhook_event = entry.messaging[0]
+      console.log(webhook_event)
+
       // Get the sender PSID
-      let sender_psid = webhook_event.sender.id;
-      console.log('Sender PSID: ' + sender_psid);
+      let sender_psid = webhook_event.sender.id
+      console.log('Sender PSID: ' + sender_psid)
+
+      // Check if the event is a message or postback and
+      // pass the event to the appropriate handler function
+      if (webhook_event.message) {
+        handleMessage(sender_psid, webhook_event.message)
+      } else if (webhook_event.postback) {
+        handlePostback(sender_psid, webhook_event.postback)
+      }
+
     })
     // Returns a '200 OK' response to all requests
     res.status(200).send("EVENT_RECEIVED");
@@ -49,18 +60,66 @@ const postWebhook = (req, res) => {
   }
 }
 
-const handleMessage = (sender_psid, received_message) => {
+function handleMessage(sender_psid, received_message) {
+  let response;
 
+  // Check if the message contains text
+  if (received_message.text) {
+
+    // Create the payload for a basic text message
+    response = {
+      "text": `You sent the message: "${received_message.text}". Now send me an image!`
+    }
+  } else if (received_message.attachments) {
+    response = {
+      "text": `Mày gửi cái gì dị`
+    }
+  }
+
+  // Sends the response message
+  callSendAPI(sender_psid, response);
 }
 
 // Handles messaging_postbacks events
 const handlePostback = (sender_psid, received_postback) => {
+  let response;
 
+  // Get the payload for the postback
+  let payload = received_postback.payload;
+
+  // Set the response based on the postback payload
+  if (payload === 'yes') {
+    response = { "text": "Thanks!" }
+  } else if (payload === 'no') {
+    response = { "text": "Oops, try sending another image." }
+  }
+  // Send the message to acknowledge the postback
+  callSendAPI(sender_psid, response);
 }
 
 // Sends response messages via the Send API
 const callSendAPI = (sender_psid, response) => {
-  
+  // Construct the message body
+  let request_body = {
+    "recipient": {
+      "id": sender_psid
+    },
+    "message": response
+  }
+
+  // Send the HTTP request to the Messenger Platform
+  request({
+    "uri": "https://graph.facebook.com/v2.6/me/messages",
+    "qs": { "access_token": MY_VERIFY_TOKEN },
+    "method": "POST",
+    "json": request_body
+  }, (err, res, body) => {
+    if (!err) {
+      console.log('message sent!')
+    } else {
+      console.error("Unable to send message:" + err);
+    }
+  });
 }
 
 module.exports = {
