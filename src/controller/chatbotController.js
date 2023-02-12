@@ -69,6 +69,11 @@ function handleMessage(sender_psid, received_message) {
 
     // Create the payload for a basic text message
     const text = HandleOpenAI(received_message.text)
+    console.log(`
+      ----------------------------------
+      OpenAI: ${text}
+      --------------------------------
+    `)
     response = {
       "text": text
     }

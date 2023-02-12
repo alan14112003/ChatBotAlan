@@ -17,7 +17,6 @@ const HandleOpenAI = async (message) => {
       top_p: 1.0,
       frequency_penalty: 0.0,
       presence_penalty: 0.0,
-      stop: ["n"],
     })
 
     return response.data.choices[0].text
