@@ -68,7 +68,8 @@ async function handleMessage(sender_psid, received_message) {
   if (received_message.text) {
 
     // Create the payload for a basic text message
-    const text = await HandleOpenAI(received_message.text)
+    let text 
+    await HandleOpenAI(received_message.text).then(data => text = data)
     console.log(`
       ----------------------------------
       OpenAI: ${text}
