@@ -66,17 +66,15 @@ async function handleMessage(sender_psid, received_message) {
 
   // Check if the message contains text
   if (received_message.text) {
-
-    // Create the payload for a basic text message
-    let text 
-    await HandleOpenAI(received_message.text).then(data => text = data)
-    console.log(`
-      ----------------------------------
-      OpenAI: ${text}
-      --------------------------------
-    `)
-    response = {
-      "text": text
+    if (received_message.text.toLowerCase().includes('bạn tên gì')) {
+      response = {
+        "text": 'Tôi tên là Alan đẹp trai khoai to'
+      }
+    } else {
+      await HandleOpenAI(received_message.text).then(data => text = data)
+      response = {
+        "text": text
+      }
     }
   } else if (received_message.attachments) {
     response = {
