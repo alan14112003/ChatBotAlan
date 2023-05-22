@@ -12,7 +12,7 @@ const HandleOpenAI = async (message) => {
     const response = await openAI.createCompletion({
       model: 'text-davinci-003',
       prompt: message,
-      max_tokens: 100,
+      max_tokens: 10000,
       temperature: 0.5,
     })
 
